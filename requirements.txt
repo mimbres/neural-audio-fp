@@ -1,0 +1,7 @@
+tensorflow-gpu~=2.2.0
+kapre==0.3.5
+librosa
+click
+yaml
+numpy
+matplotlib
