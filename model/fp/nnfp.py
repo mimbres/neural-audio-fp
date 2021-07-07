@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Sungkyun Chang
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-"""
-nnfp.py:
-    'Neural Audio Fingerprint for High-specific Audio Retrieval based on 
-    Contrastive Learning', https://arxiv.org/abs/2010.11910
+""" nnfp.py
+
+'Neural Audio Fingerprint for High-specific Audio Retrieval based on 
+Contrastive Learning', https://arxiv.org/abs/2010.11910
 
 USAGE:
-    Please see test() method in the below.
+    
+    Please see test() in the below.
+    
 """
 import numpy as np
 import tensorflow as tf
@@ -18,12 +19,14 @@ assert tf.__version__ >= "2.0"
 
 class ConvLayer(tf.keras.layers.Layer):
     """
+    Separable convolution layer
+    
     Arguments
     ---------
     hidden_ch: (int)
-    strides: [( , )( , )]
+    strides: [(int, int), (int, int)]
     norm: 'layer_norm1d' for normalization on Freq axis. (default)
-          'layer_norm2d' fpr normalization on on FxT space 
+          'layer_norm2d' for normalization on on FxT space 
           'batch_norm' or else, batch-normalization
     
     Input
@@ -35,6 +38,7 @@ class ConvLayer(tf.keras.layers.Layer):
     Output
     ------
     x: (B,F,T,C) with {F=F/stride, T=T/stride, C=hidden_ch}
+    
     """
     def __init__(self,
                  hidden_ch=128,
@@ -81,23 +85,20 @@ class ConvLayer(tf.keras.layers.Layer):
 
 class DivEncLayer(tf.keras.layers.Layer):
     """
-    Multi-head L2 projection layer, aka. 'divide and encode' layer.
-    - The 'divide and encode' concept was found in early work of Lai et.al.,
+    Multi-head projection a.k.a. 'divide and encode' layer:
+        
+    • The concept of 'divide and encode' was discovered  in Lai et.al.,
      'Simultaneous Feature Learning and Hash Coding with Deep Neural Networks',
       2015. https://arxiv.org/abs/1504.03410
-    - This structure was also adopted in Gfeller et.al. 'Now Playing: Continuo-
+    • It was also adopted in Gfeller et.al. 'Now Playing: Continuo-
       us low-power music recognition', 2017. https://arxiv.org/abs/1711.10958
-    - Since the concept of 'divide and encode' has been also widely used in 
-      'multi-head attention' works, we call this a multi-head L2 projection layer. 
-    
     
     Arguments
     ---------
-    q: (int) number of slices, equivalent with that of output embedding
-        dimension, as 'slice_length = input_sz / q'
+    q: (int) number of slices as 'slice_length = input_dim / q'
     unit_dim: [(int), (int)]
     norm: 'layer_norm1d' or 'layer_norm2d' uses 1D-layer normalization on the feature.
-          'batch_norm' or else uses batch normalization. Default is 'layer_norm2d'
+          'batch_norm' or else uses batch normalization. Default is 'layer_norm2d'.
 
     Input
     -----
@@ -106,6 +107,7 @@ class DivEncLayer(tf.keras.layers.Layer):
     Returns
     -------
     emb: (B,Q)
+    
     """
     def __init__(self, q=128, unit_dim=[32, 1], norm='batch_norm'):
         super(DivEncLayer, self).__init__()
@@ -140,7 +142,8 @@ class DivEncLayer(tf.keras.layers.Layer):
     def _split_encoding(self, x_slices):
         """
         Input: (B,Q,S)
-        Returns: (B,Q) 
+        Returns: (B,Q)
+        
         """
         out = list()
         for i in range(self.q):
@@ -158,6 +161,7 @@ class FingerPrinter(tf.keras.Model):
     Fingerprinter: 'Neural Audio Fingerprint for High-specific Audio Retrieval
         based on Contrastive Learning', https://arxiv.org/abs/2010.11910
     
+    IN >> [Convlayer]x8 >> [DivEncLayer] >> [L2Normalizer] >> OUT 
     
     Arguments
     ---------
@@ -171,7 +175,7 @@ class FingerPrinter(tf.keras.Model):
           'batch_norm' or else, batch-normalization.
     use_L2layer: True (default)
     
-    Note: batch-normalization will not work properly with TPUs.
+    • Note: batch-normalization will not work properly with TPUs.
                     
     
     Input
@@ -182,6 +186,7 @@ class FingerPrinter(tf.keras.Model):
     Returns
     -------
     emb: (B,Q) 
+    
     """
     def __init__(self,
                  input_shape=(256,32,1),
@@ -228,8 +233,7 @@ class FingerPrinter(tf.keras.Model):
 
 def get_fingerprinter(cfg, trainable=False):
     """
-    Currently, input shapes other than the default value will
-    require different front hidden and strides parameters.
+    Input length : 1s or 2s
     
     Arguements
     ----------
@@ -255,19 +259,17 @@ def get_fingerprinter(cfg, trainable=False):
     
 
 def test():
-    from utils.config_gpu_memory_lim import allow_gpu_memory_growth
-    allow_gpu_memory_growth()
-    _input = tf.constant(np.random.randn(3,256,63,1), dtype=tf.float32) # BxFxTx1
+    input_1s = tf.constant(np.random.randn(3,256,32,1), dtype=tf.float32) # BxFxTx1
     fprinter = FingerPrinter(emb_sz=128, fc_unit_dim=[32, 1], norm='layer_norm2d')
-    fprinter = FingerPrinter(emb_sz=128, fc_unit_dim=[32, 1],
-                             norm='layer_norm2d', use_effnet_ver=4)
-    fprint = fprinter(_input) # (3,128)
+    emb_1s = fprinter(input_1s) # BxD
+    
+    input_2s = tf.constant(np.random.randn(3,256,63,1), dtype=tf.float32) # BxFxTx1
+    fprinter = FingerPrinter(emb_sz=128, fc_unit_dim=[32, 1], norm='layer_norm2d')
+    emb_2s = fprinter(input_2s)
     #%timeit -n 10 fprinter(_input) # 27.9ms
-    # 14M
-    return fprint
 """
-Total params: 16,939,008
-Trainable params: 0
-Non-trainable params: 16,939,008
+Total params: 19,224,576
+Trainable params: 19,224,576
+Non-trainable params: 0
 
 """

@@ -1,45 +1,44 @@
 # -*- coding: utf-8 -*-
-"""NTxent_loss_single_gpu.py
+""" NTxent_loss_single_gpu.py
 
 Simple implementation of Normalized Temperature Crossentropy loss for 
 single GPU.
 
 
-    Input batch for FP training:
-    - We assume a batch of ordered embeddings as {a0, a1,...b0, b1,...}.
-    - In SimCLR paper, a(i) and b(i) are augmented samples from the ith
+Input batch for FP training:
+    • We assume a batch of ordered embeddings as {a0, a1,...b0, b1,...}.
+    • In SimCLR paper, a(i) and b(i) are augmented samples from the ith
       original sample.
-    - In our Fingerprinter, we assume a(i) is ith original sample, while b(i) 
+    • In our Fingerprinter, we assume a(i) is ith original sample, while b(i) 
       is augmented samples from a(i).
-    - In any case, input embeddings should be split by part a and b.
+    • In any case, input embeddings should be split by part a and b.
     
-    How is it different from SimCLR author's code?
-    - The drop_diag() part gives the better readability, and is coceptually
+How is it different from SimCLR author's code?
+    • The drop_diag() part gives the better readability, and is coceptually
       more making sense (in my opinion).
-    - Other than that, it is basically equivalent.
+    • Other than that, it is basically equivalent.
     
-    Why can't we use this code for multi-GPU or TPUs?
-    - drop_diag() part will not work properly there.
-    - So I provide NTxent_fp_loss_tpu.py for multi-GPU and TPUs.
+Why can't we use this code for multi-GPU or TPUs?
+    • drop_diag() part will not work properly there.
+    • So I provide NTxent_fp_loss_tpu.py for multi-GPU and TPUs.
         
 """
 import tensorflow as tf
 
 
 class NTxentLoss():
-
     def __init__(self,
                  n_org=int(),
                  n_rep=int(), 
                  tau=0.05,
                  **kwargs
                  ):
-        """Init."""
+        """ Init. """
         self.n_org = n_org
         self.n_rep = n_rep
         self.tau = tau
         
-        """Generate temporal labels and diag masks."""
+        """ Generate temporal labels and diag masks. """
         self.labels = tf.one_hot(tf.range(n_org), n_org * 2 - 1)
         self.mask_not_diag = tf.constant(tf.cast(1 - tf.eye(n_org), tf.bool))
         
@@ -52,16 +51,20 @@ class NTxentLoss():
     
     @tf.function 
     def compute_loss(self, emb_org, emb_rep):
-        """NTxent Loss function for neural audio fingerprint.
+        """ NTxent Loss function for neural audio fingerprint.
         
-        NOTE1: all input embeddings must be L2-normalized... 
-        NOTE2: emb_org and emb_rep must be even number.
+        • Every input embeddings must be L2-normalized... 
+        • Batch-size must be an even number.
         
-        Args:
-            emb_org: tensor of shape (nO, d), nO is the number of original samples, and d is dimension of embeddings. 
-            emb_rep: tensor of shape (nR, d)        
-                    
-        Returns:
+        Args
+        ----
+        emb_org: tensor of shape (nO, d)
+            nO is the number of original samples. d is dimension of embeddings. 
+        emb_rep: tensor of shape (nR, d)        
+            nR is the number of replica (=augmented) samples.
+            
+        Returns
+        -------
 	    (loss, sim_mtx, labels)
         
         """
@@ -82,10 +85,13 @@ class NTxentLoss():
 # Unit-test
 def test_loss():
     feat_dim = 5
-    n_org, n_rep = 3, 3   # NOTE: usually n_org = n_rep. because we always prepare pairwise. Batchsize is 6
+    n_org, n_rep = 3, 3 # Batch-size N is 6
+    # NOTE: Usually n_org = n_rep. But we can also experiment different setups
+    # like n_org = 3, n_rep=6. In this case each origianl sample will have 2
+    # different versions of replicas.
     tau = 0.05 # temperature
     emb_org = tf.random.uniform((n_org, feat_dim)) # this should be [org1, org2, org3]
-    emb_rep = tf.random.uniform((n_rep, feat_dim)) # this should [rep1, rep2, rep3] 
+    emb_rep = tf.random.uniform((n_rep, feat_dim)) # this should be [rep1, rep2, rep3] 
     
     loss_obj = NTxentLoss(n_org=n_org, n_rep=n_rep, tau=tau)
     loss, simmtx_upper_half, _ = loss_obj.compute_loss(emb_org, emb_rep)

@@ -2,7 +2,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-"""audio_utils.py"""
+""" audio_utils.py """
 import wave
 import numpy as np
 
@@ -149,6 +149,7 @@ def get_fns_seg_list(fns_list=[],
         
         offset_min is 0 or negative integer
         offset_max is 0 or positive integer
+        
     """
     if hop == None: hop = duration
     fns_event_seg_list = []
@@ -227,6 +228,7 @@ def load_audio(filename=str(),
     """
         Open file to get file info --> Calulate index range
         --> Load sample by index --> Padding --> Max-Normalize --> Out
+        
     """
     start_frame_idx = np.floor((seg_start_sec + offset_sec) * fs).astype(int)
     seg_length_frame = np.floor(seg_length_sec * fs).astype(int)
@@ -267,7 +269,7 @@ def load_audio_multi_start(filename=str(),
                            seg_length_sec=float(),
                            fs=22050,
                            amp_mode='normal'):
-    """load_audio wrapper for loading audio with multiple start indices."""
+    """ Load_audio wrapper for loading audio with multiple start indices. """
     # assert(len(seg_start_sec_list)==len(seg_length_sec))
     out = None
     for seg_start_sec in seg_start_sec_list:

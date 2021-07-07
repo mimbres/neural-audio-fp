@@ -3,31 +3,23 @@
 ![TensorFlow Requirement: 2.0](https://img.shields.io/badge/TensorFlow-2.0-brightgreen)
 <table align="center"><tr><td align="center" width="9999">
 
-# Batch-Spec-Augment-GPU
-Efficient Batch-wise Augmentation tools for Audio Spectrogram with TF2 GPU support
+# Spec-augment-chain GPU
+Flexible Augmentation Pipeline for Audio Spectrogram
 </table>
 
 ## Key features
-* batch-wise processing
+* build your flexible chain with CutOut and SpecAugment 
 * working as an augmentation layer with probability
 * working standalone as a pre-processor in data pipeline
 * n-cutout: can create multiple holes
 * vertical: temporal masking
 * horizontal: frequency masking
 
-## Comparison with other repos
-| repo name | batch-wise | layer encap.| n-cutout | freq/time mask | TF | PyTorch |   
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `this-repo` |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:x: *(planned)*|
-| [`DemisEom/SpecAugment`](https://github.com/DemisEom/SpecAugment) |:x:|:x:|:x:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
-| [`uoguelph-mlrg/Cutout`](https://github.com/uoguelph-mlrg/Cutout) |:x:|:x:|:heavy_check_mark:|:x:|:x:|:heavy_check_mark:|
-
 ## Installation
 * Basically nothing is required other than [Tensorflow](https://www.tensorflow.org/)
-* Our example codes require [librosa](https://github.com/librosa/librosa)
+* The example codes require [librosa](https://github.com/librosa/librosa)
 
 ## Quick start
-* specaug_chain DEMO
 ```python
 from specaug_chain import SpecAugChainer
 spec_aug_chainer = SpecAugChainer(chain_config=['cutout', 'vertical', 'horizontal'],
@@ -51,5 +43,5 @@ spec_aug_chainer.bypass = True # False by default.
 |<img src="./images/specaug_output_random.png" /> |
 
 ## Speed
-* `uniform_mask` = True: with input shape of 128 x 256 x 512 x 1 (B,W,H,C), applying 3-cutout augmentation took less than 5 ms using Titan X GPU.  
+* `uniform_mask` = True: with input shape of 128 x 256 x 512 x 1 (B,W,H,C), applying 3-cutout augmentation takes less than 5 ms in Titan X GPU.  
 * `uniform_mask` = False: 359 ms

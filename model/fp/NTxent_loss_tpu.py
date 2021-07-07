@@ -1,31 +1,31 @@
 # -*- coding: utf-8 -*-
-"""NTxent_loss_tpu.py"""
+""" NTxent_loss_tpu.py """
 import tensorflow as tf
 
 
-class NTxentLoss(tf.keras.losses.Loss):
+class NTxentLoss():
     """
     Simple implementation of Normalized Temperature Crossentropy loss for 
     multiple GPUs and TPUs.
     
     How should the input batch be prepared for FP training?
-    - We assume a batch of ordered embeddings as {a0, a1,...b0, b1,...}.
-    - In SimCLR paper, a(i) and b(i) are augmented samples from the ith
+    • We assume a batch of ordered embeddings as {a0, a1,...b0, b1,...}.
+    • In SimCLR paper, a(i) and b(i) are augmented samples from the ith
       original sample.
-    - In our Fingerprinter, we assume a(i) is ith original sample, while b(i) 
-      is augmented samples from a(i).
-    - In any case, input embeddings should be split by part a and b.
+    • In this work, we assume a(i) to be ith original sample, while b(i) 
+      to be augmented samples from a(i).
+    • In any case, input embeddings should be split by part a and b.
     
-    Why not provide TPUs code now?
-    - Training with TPUs requires a new data pipeline.
-    - In particular, the augmentation pipeline must be implemented based on
-      fully GPU/TPUs tensors. I have a working code under testing. Since I
-      renewed augmentations alot there, it will be unsuitable for the purpose
+    Why not provide TPUs code in this release?
+    • Training with TPUs requires a new data pipeline.
+    • In particular, the augmentation pipeline must be implemented based on
+      fully GPU/TPUs tensors. I am working on new code for that. Since I
+      renewed augmentation methods there, it will be unsuitable for the purpose
       of repoducing the ICASSP paper's result.
-    - Still planning for the next release.
     
     Why are multiple GPUs or TPUs important? What are the benefits?
-    - The larger the batch size, the better the performance.
+    • The larger the batch size, the better the performance in contrastive 
+      learning.
     
     References:
         https://www.tensorflow.org/api_docs/python/tf/distribute
@@ -56,7 +56,7 @@ class NTxentLoss(tf.keras.losses.Loss):
     
     @tf.function(experimental_relax_shapes=True)
     def tpu_cross_replica_concat(self, tensor, ctx=None):
-        """input 'tensor' is within per replica context..."""
+        """ input 'tensor' is within per replica context """
         
         if ctx is None or ctx.num_replicas_in_sync <=1:
             # bypass
@@ -103,7 +103,7 @@ class NTxentLoss(tf.keras.losses.Loss):
             hb_large = hb
         else:
             # {ha_large, hb_large}: Cross-replica concat of {ha, hb}
-            n_replicas = ctx.num_replicas_in_sync
+            # n_replicas = ctx.num_replicas_in_sync
             ha_large = self.tpu_cross_replica_concat(ha, ctx)
             hb_large = self.tpu_cross_replica_concat(hb, ctx)
         
@@ -146,3 +146,4 @@ def test_loss():
     emb_rep = tf.random.uniform((n_rep, feat_dim))
     
     loss_obj = NTxentLoss(local_bsz=1000)
+    loss, simmtx_upper_half, _ = loss_obj.loss_fn(emb_org, emb_rep)

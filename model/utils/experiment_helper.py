@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""experiment_helper.py"""
+""" experiment_helper.py """
 import os
 import tensorflow as tf
 import tensorflow.keras as K
@@ -15,11 +15,11 @@ class ExperimentHelper():
         - logging and writing loss metrics and images to Tensorboard. 
     
     USAGE:
-        - 1. Define a new or existing (for restoring) experiment name. 
-        - 2. Construct {optimizer, model}.
-        - 3. Get the number of steps for a single epoech from dataloader.
-        - 4. Construct a helper class object.
-        - 5. In your training loop, call the methods described in the below.
+        1. Define a new or existing (for restoring) experiment name. 
+        2. Construct {optimizer, model}.
+        3. Get the number of steps for a single epoech from dataloader.
+        4. Construct a helper class object.
+        5. In your training loop, call the methods described in the below.
     
     Methods:
         - save_checkpoint():
@@ -119,7 +119,7 @@ class ExperimentHelper():
         
             
     def update_on_epoch_end(self, save_checkpoint_now=True):
-        """Update current epoch index, and loss metrics."""
+        """ Update current epoch index, and loss metrics. """
         if save_checkpoint_now:
             self.save_checkpoint()
         else:
@@ -193,6 +193,7 @@ class ExperimentHelper():
             'g(f)' or 'f' or 'f_postL2'.
         tb : (bool), optional
             Write to tensorboard if set True. The default is True.
+            
         """
         self._minitest_acc = accs_by_scope
         if tb or (tb==None and self._cfg_use_tensorboard):
@@ -212,6 +213,7 @@ class ExperimentHelper():
             A key string to specify an image source. ex) 'tr_sim_mtx'
         image_mtx : (2D NumPy array)
             Any 2D matrix representing an image.
+            
         """        
         if self._cfg_use_tensorboard:
             # Generate images

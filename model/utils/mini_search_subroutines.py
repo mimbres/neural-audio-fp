@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-"""mini_search_subroutines.py
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+""" mini_search_subroutines.py
 
 A simple implementation of in-memory-search using NumPy and Tensorflow.
 
-- Currently, this code is used only for mini search test in the training stage.  
-- For large-scale experiments, it is strongly recommended to use the super fast
+• Currently, this code is used only for mini search test in the training stage.  
+• For large-scale experiments, it is strongly recommended to use the super fast
   FAISS-based implementation provided in this repo.
-- In terms of speed and memory usage, [this code] < [FAISS-CPU] < [FAISS-GPU] 
+• In terms of speed and memory usage, [this code] < [FAISS-CPU] < [FAISS-GPU] 
   is the most efficient.
 
 Functions:
@@ -164,7 +167,6 @@ def mini_search_eval(query,
     mean_rank : (float)
         Mean rank.
 
-
     """
     n_augs = query.shape[1]
     n_scopes = len(scopes)
@@ -218,8 +220,8 @@ def mini_search_eval(query,
         top3_acc[i] = _n_corrects_top3 / n_targets
         top10_acc[i] = _n_corrects_top10 / n_targets
     top1_acc *= 100.
-    top1_acc *= 100.
-    top1_acc *= 100.
+    top3_acc *= 100.
+    top10_acc *= 100.
     
     if display:
         color_cyan = '\033[36m'

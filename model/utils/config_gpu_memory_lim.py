@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
 
+
 def allow_gpu_memory_growth():
     physical_devices = tf.config.list_physical_devices('GPU')
     # assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -14,7 +15,6 @@ def allow_gpu_memory_growth():
     return
 
 
-                
 def config_gpu_memory_limit(size_Gb):
     mem_size = round(1024 * size_Gb)   
     physical_devices = tf.config.list_physical_devices('GPU') 

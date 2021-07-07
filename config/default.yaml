@@ -1,28 +1,43 @@
 # Dataset directories
 DIR:
-    SOURCE_ROOT_DIR : '../fingerprint_dataset_icassp2021/music/'
-    BG_ROOT_DIR : '../fingerprint_dataset_icassp2021/aug/bg/'
-    IR_ROOT_DIR : '../fingerprint_dataset_icassp2021/aug/ir/'
-    SPEECH_ROOT_DIR : '../fingerprint_dataset_icassp2021/aug/speech/common_voice_8k/en/'     
-    # Speech augmentation was not included in the ICASSP results.
-    OUTPUT_ROOT_DIR : './logs/emb/' # Root directory where the generated embeddings (uncompressed fingerprinter output) will be stored. 
-    LOG_ROOT_DIR : './logs/' # Root directory where the checkpoint, tensorboard logs and images will be stored.
+    SOURCE_ROOT_DIR : '../neural-audio-fp-dataset/music/'
+    BG_ROOT_DIR : '../neural-audio-fp-dataset/aug/bg/'
+    IR_ROOT_DIR : '../neural-audio-fp-dataset/aug/ir/'
+    SPEECH_ROOT_DIR : '../neural-audio-fp-dataset/aug/speech/common_voice_8k/en/'
+                # Speech augmentation was not included in the ICASSP results.
+    OUTPUT_ROOT_DIR : './logs/emb/'
+                # Root directory where the generated embeddings (uncompressed
+                #  fingerprints) will be stored.
+    LOG_ROOT_DIR : './logs/'
+                # Root directory where the checkpoint, tensorboard logs and
+                # images will be stored.
 
-# Data selection for generating Embedding 
+# Data selection for 'train' and 'generate' commands
 DATA_SEL:
-    TRAIN : '10k_icassp'  # '10k_icassp' for ICASSP results.
-    TEST_DUMMY_DB : '10k' # '10k' or '100k_full_icassp'.  
-    TEST_QUERY_DB : 'unseen_syn' 
-    # TEST_QUERY_DB presets:
-    #   'unseen_icassp' uses a fixed {query, db} reproducing ICASSP results.
-    #   'unseen_syn' synthesizes new queries from the unseen DB.
-    REDUCE_ITEMS_P : 0 # Reduce training dataset size by percentage (%). Set 0 to inactivate this. 
+    TRAIN : '10k_icassp'
+                # '10k_icassp' for ICASSP results. No other options now.
+    TEST_DUMMY_DB : '10k_full'
+                # '10k_full' or '100k_full_icassp'. This scales your search
+                # experiment. Mini-data user can use '10k_full' mode. It's
+                # just '10k_30s' though.
+    TEST_QUERY_DB : 'unseen_icassp' #'unseen_icassp'
+                # TEST_QUERY_DB presets:
+                # - 'unseen_icassp': use the fixed {query, db} pairs reproducing
+                #                    ICASSP results--2,000 test IDs for 500
+                #                    songs.
+                # - 'unseen_syn': randomly synthesize new queries from DB as
+                #                 in the training, and generate fingerprints.
+                #                 Currently, the DB source is set to 500 songs
+                #                 of the validation set.
+    REDUCE_ITEMS_P : 0
+                # Reduce training dataset size by percentage (%). Set 0 to
+                # inactivate.
 
-# Model hyper-parameters & training setup
+# Model hyper-parameters
 MODEL:
     FEAT : 'melspec'  # 'melspec' or 'melspec_maxnorm'
     FS : 8000 # Sampling rate
-    DUR : 1. # Unit segment length in seconds. 
+    DUR : 1. # Unit segment length in seconds.
     HOP : .5 # Hop-size of the segment window in seconds.
     STFT_WIN : 1024
     STFT_HOP : 256
@@ -31,42 +46,45 @@ MODEL:
     N_MELS : 256 # Number of mel-frequency bins.
     EMB_SZ : 128  # Dimension of fingerprint, d in this paper.
     BN : 'layer_norm2d' # or 'batch_norm'
-    # NOTE: 
+    # NOTE:
     # - In the current version, modifying {FS, DUR, HOB, STFT WIN, STFT HOP}
-    #   may cause the model to malfunction or cause dimension mismatch errors. 
-    #   In that case, you will need to modify model/fp/nnfp.py parameters.
+    #   may cause the model to malfunction or cause input shape mismatch errors.
+    #   In that case, you will need to modify the kernel size strides of Conv
+    #   layers in 'model/fp/nnfp.py'.
 
 # Batch-size
 BSZ:
-    TR_BATCH_SZ : 120 #320 # N, Training batch size. Must be EVEN number. Set according to GPU memory capacity.
-    TR_N_ANCHOR : 60 # 160 # N/2 originals (and N/2 replicas).  
+    TR_BATCH_SZ : 120 #
+        # Training batch size N must be EVEN number.
+    TR_N_ANCHOR : 60 # Usually N/2.
     VAL_BATCH_SZ : 120 # Must be EVEN number.
-    VAL_N_ANCHOR : 60
-    TS_BATCH_SZ : 125 # 295 # 236 or 250 or 295 or 500   
+    VAL_N_ANCHOR : 60 # Usually N_val/2
+    TS_BATCH_SZ : 125
+        # It is recommended to set it one of {125, 236, 250, 295, 500} to
+        # avoid unwanted zero-paddings: our testset has 500 songs of 30s.
 
 # Training parameters
 TRAIN:
     MAX_EPOCH : 100
-    OPTIMIZER : 'Adam' # 'LAMB' or 'Adam'.
-    LR : 1e-4 # Initial learning rate. Usually in the range from 3e-5 to 1e-4
+    OPTIMIZER : 'Adam' # 'LAMB' or 'Adam'. LAMB for BSZ >= 240
+    LR : 1e-4 # Initial learning rate. Usually in the range from 3e-5 to 1e-4 (BSZ < 1280)
     LR_SCHEDULE : 'cos' # ['cos', 'cos-restart', 'None'].
     CHECKPOINT_KEEP_N_HOUR: 1
     TENSORBOARD : True
-    SAVE_IMG : True # Saving similarity matrix generated by loss object.   
+    SAVE_IMG : True # Saving similarity matrix generated by loss object.
     MINI_TEST_IN_TRAIN : True
-    # NOTE: 
-    # - MINI_TEST_IN_TRAIN=True will perform a mini-search-test (using 
-    #   validation set) every epoch in training. This can be a useful 
-    #   validation tool.
-    
+    # NOTE:
+    # - MINI_TEST_IN_TRAIN=True performs mini-search-test using part of
+    #   validation dataset at the end of every epoch in training.
+
 # Loss parameters
 LOSS:
-    LOSS_MODE : 'NTxent' # 'NTxent', 'NTxent_distributed' or 'Semi-hard-triplet'
-    TAU : 0.1 # 0.05 # Temporature parameter of NTxent loss. 0 < TAU < 1   
+    LOSS_MODE : 'NTxent' # 'Semi-hard-triplet' coming soon for 'now-playing'.
+    TAU : 0.1 # 0.05 # Temperature parameter of NTxent loss. 0. < TAU < 1.
 
 # Time-domain augmentation parameters
 TD_AUG:
-    TR_SNR : [0, 10] # Synthesize replicas using random SNR in the range of [MIN, MAX]. SNR in decibel. 
+    TR_SNR : [0, 10] # Synthesize replicas using random SNR in the range of [MIN, MAX]. SNR in decibel.
     TS_SNR : [0, 10] # Active in real-time synthesis of test queries. TEST_QUERY='unseen_icassp' will inactivate this.
     VAL_SNR : [0, 10]
     TR_SPEECH_AUG : False # False in ICASSP results.
@@ -74,20 +92,20 @@ TD_AUG:
     VAL_SPEECH_AUG : False # False in ICASSP results.
     TR_BG_AUG : True
     TS_BG_AUG : True # TEST_QUERY='unseen_icassp' will inactivate this.
-    VAL_BG_AUG : True
+    VAL_BG_AUG : True # Validation set always flollow this even in 'generate' command.
     TR_IR_AUG : True
     TS_IR_AUG : True # TEST_QUERY='unseen_icassp' will inactivate this.
     VAL_IR_AUG: True
 
 # Specaug parameters
 SPEC_AUG:
-    SPECAUG_CHAIN : ['cutout', 'horizontal']
-    SPECAUG_PROBS : 1
+    SPECAUG_CHAIN : ['cutout', 'horizontal'] # 'cutout', 'horizontal', 'vertical'
+    SPECAUG_PROBS : 1.
     SPECAUG_N_HOLES : 1
-    SPECAUG_HOLE_FILL : 'zeros'
+    SPECAUG_HOLE_FILL : 'zeros' # one of {'min', 'zeros', 'random', [min_mag, max_mag]}
 
 # Device setup
 DEVICE:
-    CPU_N_WORKERS : 4 # 8 # or 4 for minimal system.
-    CPU_MAX_QUEUE : 10 # 20 # or 10 for minimal system. 
- 
+    CPU_N_WORKERS : 4 # 4 for minimal system. 8 is recommended.
+    CPU_MAX_QUEUE : 10 # 10 for minimal system. 20 is recommended.
+

@@ -7,12 +7,12 @@ from matplotlib import cm
 import tensorflow as tf
 import io
 
+
 def save_imshow(x, save_fpath, title=None):
     """
     Save imshow() as .png file. This is a common way to save images when not
     using Tensorboard.
-    
-    
+       
     Parameters
     ----------
     x : 2d-numpy-array
@@ -21,10 +21,6 @@ def save_imshow(x, save_fpath, title=None):
         
     title : (str), optional
         DESCRIPTION. The default is None.
-
-    Returns
-    -------
-    None.
 
     """
 
@@ -49,7 +45,6 @@ def plot_to_image(figure):
     """
     Converts the matplotlib plot specified by 'figure' to a PNG image and
     returns it. The supplied figure is closed and inaccessible after this call.
-
 
     Parameters
     ----------
@@ -83,7 +78,6 @@ def get_imshow_image(x, title=None):
     Save imshow() as .png file. This method is used for displaying imshow in 
     tensorboard.
     
-
     Parameters
     ----------
     x : (2D numpy array)

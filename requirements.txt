@@ -1,7 +1,9 @@
-tensorflow-gpu~=2.2.0
+tensorflow~=2.2.0
+faiss-gpu==1.6.5
 kapre==0.3.5
 librosa
 click
-yaml
+pyyaml
 numpy
 matplotlib
+wavio

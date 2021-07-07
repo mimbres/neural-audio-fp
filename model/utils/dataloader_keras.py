@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""dataloader_keras.py"""
+""" dataloader_keras.py """
 from tensorflow.keras.utils import Sequence
 from model.utils.audio_utils import (bg_mix_batch, ir_aug_batch, load_audio,
                                      get_fns_seg_list, load_audio_multi_start)
 import numpy as np
 
-MAX_IR_LENGTH = 400  # 50ms with fs=8000
+MAX_IR_LENGTH = 600#400  # 50ms with fs=8000
 
 
 class genUnbalSequence(Sequence):
@@ -65,8 +65,7 @@ class genUnbalSequence(Sequence):
         speech_mix_parameter : list([(bool), list(str), (int, int)]), optional
             [True, SPEECH_FILEPATHS, (MIN_SNR, MAX_SNR)]. The default is [False].
         reduce_items_p : (int), optional
-            Reduce dataset size in percentage (x). Useful when debugging code with samll
-            data. The default is 0.
+            Reduce dataset size to percent (%). Useful when debugging code with samll            data. The default is 0.
         reduce_batch_first_half : (bool), optional
             Remove the first half of elements from each output batch. The
             resulting output batch will contain only replicas. This is useful
@@ -177,7 +176,7 @@ class genUnbalSequence(Sequence):
 
 
     def __len__(self):
-        """Returns the number of batches per epoch."""
+        """ Returns the number of batches per epoch. """
         if self.reduce_items_p != 0:
             return int(
                 np.ceil(self.n_samples / float(self.n_anchor)) *
@@ -187,7 +186,7 @@ class genUnbalSequence(Sequence):
 
 
     def on_epoch_end(self):
-        """Re-shuffle"""
+        """ Re-shuffle """
         if self.shuffle == True:
             self.index_event = list(np.random.permutation(self.n_samples))
         else:
@@ -214,7 +213,7 @@ class genUnbalSequence(Sequence):
 
 
     def __getitem__(self, idx):
-        """Get anchor (original) and positive (replica) samples."""
+        """ Get anchor (original) and positive (replica) samples. """
         index_anchor_for_batch = self.index_event[idx *
                                                   self.n_anchor:(idx + 1) *
                                                   self.n_anchor]
@@ -305,7 +304,7 @@ class genUnbalSequence(Sequence):
 
 
     def __event_batch_load(self, anchor_idx_list):
-        """Get Xa_batch and Xp_batch for anchor (original) and positive (replica) samples."""
+        """ Get Xa_batch and Xp_batch for anchor (original) and positive (replica) samples. """
         Xa_batch = None
         Xp_batch = None
         for idx in anchor_idx_list:  # idx: index for one sample
@@ -328,7 +327,7 @@ class genUnbalSequence(Sequence):
             else:
                 _anchor_offset_frame = 0
                 anchor_start_sec = self.fns_event_seg_list[idx][1] * self.hop
-            """Calculate multiple(=self.n_pos_per_anchor) pos_start_sec."""
+            """ Calculate multiple(=self.n_pos_per_anchor) pos_start_sec. """
             if self.n_pos_per_anchor > 0:
                 pos_offset_min = np.max([
                     (_anchor_offset_frame - self.offset_margin_frame),
@@ -338,15 +337,8 @@ class genUnbalSequence(Sequence):
                     (_anchor_offset_frame + self.offset_margin_frame),
                     offset_max
                 ])
-                if (self.experimental_mode == False):
-                    _pos_offset_frame_list = np.random.randint(
-                        low=pos_offset_min,
-                        high=pos_offset_max,
-                        size=self.n_pos_per_anchor)
-                    _pos_offset_sec_list = _pos_offset_frame_list / self.fs
-                    pos_start_sec_list = self.fns_event_seg_list[idx][
-                        1] * self.hop + _pos_offset_sec_list
-                else:  # In experimental_mode, we use a set of pre-defined offset for multiple positive replicas...
+                if self.experimental_mode:
+                    # In experimental_mode, we use a set of pre-defined offset for multiple positive replicas...
                     _pos_offset_sec_list = self.experimental_mode_offset_sec_list  # [-0.2, -0.1,  0. ,  0.1,  0.2] for n_pos=5 with hop=0.5s
                     _pos_offset_sec_list[(
                         _pos_offset_sec_list <
@@ -356,6 +348,26 @@ class genUnbalSequence(Sequence):
                         pos_offset_max / self.fs)] = pos_offset_max / self.fs
                     pos_start_sec_list = self.fns_event_seg_list[idx][
                         1] * self.hop + _pos_offset_sec_list
+                else:
+                    if pos_offset_min==pos_offset_max==0:
+                        # Only the case of running extras/dataset2wav.py 
+                        # as offset_margin_hot_rate=0
+                        pos_start_sec_list = self.fns_event_seg_list[idx][
+                            1] * self.hop
+                        pos_start_sec_list = [pos_start_sec_list]
+                        # print('!!!!!!!!!!!!!!!!!!!!!!')
+                        # print(pos_start_sec_list)
+                        # print([anchor_start_sec])
+
+                    else:
+                        # Otherwise, we apply random offset to replicas 
+                        _pos_offset_frame_list = np.random.randint(
+                            low=pos_offset_min,
+                            high=pos_offset_max,
+                            size=self.n_pos_per_anchor)
+                        _pos_offset_sec_list = _pos_offset_frame_list / self.fs
+                        pos_start_sec_list = self.fns_event_seg_list[idx][
+                            1] * self.hop + _pos_offset_sec_list  
             """
             load audio returns: [anchor, pos1, pos2,..pos_n]
             """

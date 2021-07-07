@@ -1,29 +1,30 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Sungkyun Chang
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-"""SpecNCutout.
+""" ncutout_tarray.py
 
-: Batch-wise SpecAugment + N-CutOut layers for augmentation in spectral domain .
-    - for GPUs
-    - variable number of holes for cutout
-    - hole filler types ['zeros', 'random']
-    - compatiable with TF2.x and @tf.function decorator
+SpecNCutout: Batch-wise SpecAugment + N-CutOut layers for augmentation in 
+spectral domain for GPUs.
 
-*** Implementation using tf.TensorArray. ***
+• variable number of holes for cutout
+• hole filler types ['zeros', 'random']
+• compatiable with TF2.x and @tf.function decorator
+• implementation based on tf.TensorArray
+
 
 USAGE:
+
     spec_ncutout_layer = SpecNCutout(prob=0.5,
                                      n_holes=3,
                                      hole_fill='random')
     m = (your method to get spectrogram here...)
     m_aug = spec_ncutout_layer(m) 
     
-    For more details, see test() in the below
+For more details, see test() in the below
 
 References:
-    - original NumPy implementation of https://arxiv.org/abs/1708.04552       
+    • original NumPy implementation of https://arxiv.org/abs/1708.04552       
         https://github.com/uoguelph-mlrg/Cutout/blob/master/util/cutout.py
         
 """
@@ -35,33 +36,40 @@ from io import BytesIO          # for test()
 
 
 class SpecNCutout(tf.keras.layers.Layer):
-    """SpecNCutout based on SpecAugment and CutOut.
+    """ 
+    SpecNCutout based on SpecAugment and CutOut: implementation using
+    tf.TensorArray.
     
-    *** Implementation using tf.TensorArray. ***
-    
-    Arguments:        
-    - prob: (float32) probability (0-1) of cutout activity.
-            If prob=1.0 (default), always output cut-out spectrogram
-    - n_holes: Number of random holes to create
-    - uniform_mask: If True (default), use efficient uniform mask in batch. 
-    - hole_fill: (str) or [(float), (float)]
-            Values to fill the holes with. 'min'(default), 'zeros', 'random', or [min_mag, max_mag]
-            - 'min' fills with minimum magnitude of input spectrogram.
-            - 'zeros' fills with zeros.
-            - 'random' fills with random values within range of min and max of input.
-            - [min_mag, max_mag] fills with random values within the given range.
-    - hole_config: [(int),(int),(int),(int)] Configuring the range of hole
-            size as [min_width, max_width, min_height, max_height]
-            If [None,None,None,None] (default), 1/10 of input length is 
-            set as minimum, and 1/2 of input length is set as maximum.
-    - hole_wise_act_with_prob: (bool)
-            - if True (default), we apply hole-wise activation probability for augmentation.  
-            - if False, element-wise activation is uniformly applied to all the
-            corresponding holes. 
+    Arguments
+    ---------        
+    • prob: (tf.Float)
+        probability (0-1) of cutout activity. If prob=1.0 (default), always
+        output cut-out spectrogram
+    • n_holes: (int)
+        Number of random holes to create
+    • uniform_mask: (bool)
+        If True (default), use efficient uniform mask in batch. 
+    • hole_fill: (str) or [(float), (float)]
+        Values to fill the holes with. Default is 'min'.
+        - 'min' fills with minimum magnitude of input spectrogram.
+        - 'zeros' fills with zeros.
+        - 'random' fills with random values within the range of min and max of input.
+        - [min_mag, max_mag] fills with random values within the range.
+    • hole_config: [(int),(int),(int),(int)]
+        Configures the range of hole mask size by [min_width, max_width,
+        min_height, max_height]. If [None,None,None,None] (default), 1/10 of
+        the input length will be set as minimum, and 1/2 of the input length
+        will be set as maximum.
+    • hole_wise_act_with_prob: (bool)
+        - if True (default), apply hole-wise activation probability to
+          augmentation.  
+        - if False, element-wise activation is uniformly applied to all the
+          corresponding holes. 
             
-    Input:
-    - <tf.tensor> 4D tensor variable with shape (B,H,W,C), equivalent with
-                  (Batch,Freq,Time,1).
+    Input
+    -----
+    • <tf.Float> 4D tensor variable with shape (B,H,W,C), equivalent with
+      (Batch,Freq,Time,1).
     
     """
     def __init__(self,
@@ -89,7 +97,6 @@ class SpecNCutout(tf.keras.layers.Layer):
         self.hole_minw, self.hole_maxw, self.hole_minh, self.hole_maxh = hole_config
      
 
-
     def build(self, input_shape):
         self.x_h = input_shape[1]
         self.x_w = input_shape[2]
@@ -105,8 +112,7 @@ class SpecNCutout(tf.keras.layers.Layer):
             self.hf = tf.random.uniform(input_shape, 0., 1., tf.float32)
         elif self.hole_fill=='random_with_range':
             self.hf = tf.random.uniform(input_shape, self.filler_min,
-                                   self.filler_max, tf.float32)
-        
+                                   self.filler_max, tf.float32)        
 
     
     def generate_single_mask(self, h_start=int(), h_end=int(), w_start=int(),
@@ -179,7 +185,6 @@ class SpecNCutout(tf.keras.layers.Layer):
             
         return m_arr.stack() # shape: (b,h,w,1) with True for HOLE area (background is False)
         
-
     
     @staticmethod
     def get_true_background(mask):
@@ -191,10 +196,9 @@ class SpecNCutout(tf.keras.layers.Layer):
     def get_true_holes(mask):
         return tf.cast(mask, tf.float32)
 
-              
-    
+                  
     def get_hole_filler(self, x):
-        """Generate hole filler that has same shape with input spectrogram."""
+        """ Generate hole filler that has same shape with input spectrogram. """
         hf = self.hf
         if self.hole_fill=='min':
             hf = hf * tf.reduce_mean(x)
@@ -276,7 +280,6 @@ class SpecNCutout(tf.keras.layers.Layer):
             return x
 
 
-
     def get_config(self):
         config = super().get_config().copy()
         config.update({
@@ -301,8 +304,7 @@ class SpecNCutout(tf.keras.layers.Layer):
     
 #%% TEST   
 def plot_to_image(figure):
-    """Converts the matplotlib plot specified by 'figure' to a PNG image and
-    returns it. The supplied figure is closed and inaccessible after this call."""
+    """ Converts the matplotlib figure to a PNG. """
     # Save the plot to a PNG in memory.
     buf = BytesIO()
     plt.savefig(buf, format='png')
@@ -319,12 +321,14 @@ def plot_to_image(figure):
 
 
 def display_spec(mel_spectrogram=None, title=None, get_img=None):
-    """visualizing first one result of SpecAugment
-    :this method is useful when displaying imshow in tensorboard
+    """
 
-    # Arguments:
-      mel_spectrogram(ndarray): mel_spectrogram to visualize.
-      title(String): plot figure's title
+    Arguments
+    ---------
+      mel_spectrogram: (ndarray)
+          mel_spectrogram to visualize.
+      title: (String)
+          plot figure's title
     """
     # Show mel-spectrogram using librosa's specshow.
     fig = plt.figure(figsize=(10, 4))
@@ -339,7 +343,6 @@ def display_spec(mel_spectrogram=None, title=None, get_img=None):
     else:
         plt.show()
     return
-
 
         
 def test():
@@ -369,7 +372,7 @@ def test():
     m_aug = spec_ncutout_layer(m) 
     display_spec(m_aug[0,:,:,0].numpy())
     
-    # Test speed with large batch input..
+    # Test speed with large batch input.
     m_batch = tf.stack([m[0,:,:,:]] * 128) # batch size is 1024
     m_batch_aug = spec_ncutout_layer(m_batch)
     display_spec(m_batch_aug[1,:,:,0].numpy())
