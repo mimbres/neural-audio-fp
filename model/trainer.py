@@ -162,7 +162,7 @@ def trainer(cfg, checkpoint_name):
         tf.print(f'EPOCH: {ep}/{ep_max}')
 
         # Train
-        """Parallelism to speed up preprocessing.............."""
+        """ Parallelism to speed up preprocessing.............. """
         train_ds = dataset.get_train_ds(cfg['DATA_SEL']['REDUCE_ITEMS_P'])
         progbar = Progbar(len(train_ds))
         enq = tf.keras.utils.OrderedEnqueuer(
@@ -177,13 +177,13 @@ def trainer(cfg, checkpoint_name):
             progbar.add(1, values=[("tr loss", avg_loss)])
             i += 1
         enq.stop()
-        """End of Parallelism................................."""
+        """ End of Parallelism................................. """
 
         if cfg['TRAIN']['SAVE_IMG']:
             helper.write_image_tensorboard('tr_sim_mtx', sim_mtx.numpy())
 
         # Validate
-        """Parallelism to speed up preprocessing.............."""
+        """ Parallelism to speed up preprocessing.............. """
         val_ds = dataset.get_val_ds(max_song=250) # max 500
         enq = tf.keras.utils.OrderedEnqueuer(
             val_ds, use_multiprocessing=True, shuffle=False)
@@ -196,7 +196,7 @@ def trainer(cfg, checkpoint_name):
                                   helper)
             i += 1
         enq.stop()
-        """End of Parallelism................................."""
+        """ End of Parallelism................................. """
 
         if cfg['TRAIN']['SAVE_IMG']:
             helper.write_image_tensorboard('val_sim_mtx', sim_mtx.numpy())

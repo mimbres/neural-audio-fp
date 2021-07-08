@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """ dataset2wav.py
 
-Example code to create augmented dataset
+Example code about how to generate a fixed-augmented query dataset.
 
-• Fixed Validation set (val-query-db-500-30s) and test set were synthesized
-  by this code.
+• Fixed Validation set in 'val-query-db-500-30s/query' and test set queries 
+  'test-query-db-500-30s/query' were synthesized using this code.
 
 • The wav files are created by applying different random augmentation every
  10 seconds while maintaining the order and file name of each 30-second song.
 
-• You can apply `Pre-` or `post-` time offset modulation
-
-    - Pre: I usually prefer `pre-` for the fixed test/validation set. Please
-           refer `offset_margin_hop_rate` settings in line 109.
-    - Post: In training, post time offset modulation online is required for
-           randomness.
+• `Pre-` vs. `Post-` time offset modulation:
+    - Pre: Using this code, you will apply 'Pre' for generating a fixed 
+           test/validation set. Please refer `offset_margin_hop_rate` settings
+           in line: 109 of this code.
+    - Post: In training, we apply every augmentations including time offset
+           modulation online. So it's the 'Post' case.
 
 """
 from os import path
@@ -90,7 +90,7 @@ bg_dir = cfg['DIR']['BG_ROOT_DIR']
 ir_dir = cfg['DIR']['IR_ROOT_DIR']
 speech_dir = cfg['DIR']['SPEECH_ROOT_DIR']
 
-OUTPUT_ROOT_DIR = '../aug_output/take_val_0010'
+OUTPUT_ROOT_DIR = '../aug_output/take1'
 # Merging ouput is required because our fingerprinter prints only valid region.
 # ex) 30 sec input with hop=0.5 sec --> 59 fingerprints.
 

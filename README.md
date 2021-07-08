@@ -10,19 +10,19 @@
 
 ## Intro
 
-This is the code and dataset release (on July 2021) of the [neural audio fingerprint](https://arxiv.org/abs/2010.11910).
+This is the first code and dataset release (on July 2021) for reproducing [neural audio fingerprint](https://arxiv.org/abs/2010.11910).
 
 
 ## Requirements
 Minimum:
 
 - NVIDIA GPU with CUDA 10+
-- Free disk space 20 GB for experiments with **mini** dataset
+- 20 GB of free SSD space for mini dataset experiments
 
 <details>
   <summary> More info </summary>
 
-  #### System requirements to reproduce ICASSP result
+  #### System requirements to reproduce the ICASSP result
 
   - CPU with 8+ threads
   - NVIDIA GPU with 11+ GB V-memory
@@ -37,7 +37,6 @@ Minimum:
   | ~~TPU v3-8~~                                  |~~5120~~                   |
 
   - The larger the BSZ, the higher the performance.
-  - For BSZ < 240, Adam optimizer is recommended.
   - To allow the use of a larger BSZ than actual GPU memory, one trick is to
   remove `allow_gpu_memory_growth()` from the [run.py](run.py).
 
@@ -56,6 +55,11 @@ docker pull mimbres/neural-audio-fp:latest
 <details>
   <summary> Create a custom image from Dockerfile </summary>
 
+  #### Requirements
+  - NVIDIA driver >= 450.80.02
+  - Docker > 20.0
+
+  #### Create
   You can create image through `Dockerfile` and `environment.yml`.
 
   ```sh
@@ -63,24 +67,19 @@ docker pull mimbres/neural-audio-fp:latest
   cd neural-audio-fp
   docker build -t neural-audio-fp .
   ```
-
-  #### Requirements
-  - NVIDIA driver >= 450.80.02
-  - Docker > 20.0
-
+  
   #### Further information
   - Intel CPU users can remove `libopenblas` from Dockerfile.
   - `Faiss` and `Numpy` are optimized for Intel MKL.
   - Image size is about 12 GB or compressed 6.43 GB.
   - To optimize GPU-based search speed, [install from the source](https://github.com/facebookresearch/faiss/blob/master/INSTALL.md#building-from-source).
-  - **RTX 3090** and **Cloud A100** users are highly recommended to build `Faiss-gpu` from source.
 
 </details>
 
 
 ### [Conda](https://docs.anaconda.com/anaconda/install/index.html)
 <details>
-  <summary> Create a virtual environment via Conda </summary>
+  <summary> Create a virtual environment via .yml </summary>
 
   #### Requirements
 
@@ -88,6 +87,7 @@ docker pull mimbres/neural-audio-fp:latest
   - `NVIDIA driver >= 440.33`, `CUDA == 10.2` and `cuDNN 7` [(Compatiability)](https://docs.nvidia.com/deeplearning/cudnn/support-matrix/index.html)
   - [Anaconda3](https://docs.anaconda.com/anaconda/install/index.html) or Miniconda3 with Python >= 3.6
 
+  #### Create
   After checking the requirements,
 
   ```sh
@@ -96,43 +96,72 @@ docker pull mimbres/neural-audio-fp:latest
   conda env create -f environment.yml
   conda activate fp
   ```
+    
 </details>
 
-  If your installation so far fails and you don't want to build from source:
-
-  - Try `tensorflow` and `faiss-gpu=1.6.5` (not 1.7.1) in separate environments.
+<details>
+  <summary> Create a virtual environment without .yml </summary>
 
   ```sh
-  # python 3.8
+  # Python 3.8: installing in the same virtual environment
+  conda create -n YOUR_ENV_NAME 
   conda install -c anaconda -c pytorch tensorflow=2.4.1=gpu_py38h8a7d6ce_0 cudatoolkit faiss-gpu=1.6.5
   conda install pyyaml click matplotlib
   conda install -c conda-forge librosa
   pip install kapre wavio
   ```
+  
+</details>
 
+
+<details>
+  <summary> If your installation so far fails and you don't want to build from source...:thinking </summary>
+
+  - Try installing `tensorflow` and `faiss-gpu=1.6.5` (not 1.7.1) in separate environments.
+  
+  ```sh
+  #After creating a tensorflow environment for training...
+  conda create -n YOUR_ENV_NAME
+  conda install -c pytorch faiss-gpu=1.6.5
+  conda install pyyaml, click
+  ```
+  
+  Now you can run search & evaluation by
+  
+  ```
+  python eval/eval_faiss.py --help
+  
+  ```
+    
+</details>
 
 ## Dataset
 
-Dataset-mini (10.7GB): [Dataport](https://ieee-dataport.org/documents/neural-audio-fingerprint-dataset-mini) [Gdrive](https://drive.google.com/file/d/1bRXfrGQk3KNAEHdjGeOBHJTKJIAIUtU1/view?usp=sharing)
-Dataset-full (414GB) : [Dataport]() *now uploading...*
+|Dataset-mini (10.7 GB)  | Dataset-full (414 GB) |
+|:---:|:---:|
+| [Dataport](https://ieee-dataport.org/documents/neural-audio-fingerprint-dataset-mini) | [Dataport]() |
 
-* The only difference between these two datasets is the dummy 'set.Dataset-full'
- has full-scale dummy songs. 
+
+* The only difference between these two datasets is the size of 'test-dummy-db'
+. So you can first train and test with 'Dataset-mini'. Then use 'Dataset-full'
+ to test the model at 100x larger scale.
+* :eight_spoked_asterisk:**NOTICE:eight_spoked_asterisk:: If you downloaded early package (before July 8, 2021, 2:23 PM GMT) without `v1` tag, you will need `v1 update` available in [Dataport](https://ieee-dataport.org/documents/neural-audio-fingerprint-dataset-mini).**
 
 <details>
 
-  <summary> Dataset overview </summary>
+  <summary> Dataset installation </summary>
 
   This dataset includes all music sources, background noise, impulse-reponses
    (IR) samples that can be used for reproducing the ICASSP results.
 
   #### Directory location
 
-  The default directory of the dataset is '../fingerprint_dataset'. You can change the directories in config/default.yaml.
+  The default directory of the dataset is `../neural-audio-fp-dataset`. You can
+   change the directory location by modifying `config/default.yaml`.
 
   ```
   .
-  ├── fingerprint_dataset
+  ├── neural-audio-fp-dataset
   └── neural-audio-fp
   ```
 
@@ -153,7 +182,7 @@ Dataset-full (414GB) : [Dataport]() *now uploading...*
       └── val-query-db-500-30s     <== 500 songs (30s) for validation/mini-search
   ```
 
-  The data format is `16-bit 8000 Hz PCM Mono WAV`. README.md and LICENSE is
+  The data format is `16-bit 8000 Hz PCM Mono WAV`. `README.md` and `LICENSE` is
      included in the dataset for more details.
 
 </details>
@@ -161,7 +190,7 @@ Dataset-full (414GB) : [Dataport]() *now uploading...*
 
 ## Quickstart
 
-There are 3 basic `COMMAND`s.
+There are 3 basic `COMMAND` s for each step.
 
 ```python
 # Train
@@ -337,7 +366,7 @@ Click to expand each topic.
 
 Here is an overview of the system for building and retrieving database.
 The system and 'matcher' algorithm are not detailed in the paper.
-But it's very simple as in this [code]().
+But it's very simple as in this [code](eval/eval_faiss.py#L214).
 
 <p align="left">
 <img src="https://user-images.githubusercontent.com/26891722/124311508-d5a0b580-dba8-11eb-9d00-ba298fc1ea54.png" width="700">
@@ -347,15 +376,15 @@ But it's very simple as in this [code]().
 ## Plan (?)
 
 * Now working on `tf.data`-based new data pipeline for multi-GPU and TPU support.
-* One page demo using Colab.
+* One page Colab demo.
 * This project is currently based on [Faiss](https://github.com/facebookresearch/faiss), which provides the fastest large-scale vector searches.
 * [Milvus](https://github.com/milvus-io/milvus) is also worth watching as it is an active project aimed at industrial scale vector search.
-* Someone can PR :)
+* Someone can PR :smile
 
 
 ## Augmentation Demo and Scoreboard
 
-Synthesized audio samples from `dataset_augmentor_demo.py` TBA.
+Synthesized audio samples from [dataset2wav.py](extras/dataset2wav.py) TBA.
 
 ## Acknowledgement
 

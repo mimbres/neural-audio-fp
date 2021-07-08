@@ -69,7 +69,7 @@ def train(checkpoint_name, config, max_epoch):
     cfg = load_config(config)
     if max_epoch: update_config(cfg, 'TRAIN', 'MAX_EPOCH', max_epoch)
     print_config(cfg)
-    allow_gpu_memory_growth()
+    # allow_gpu_memory_growth()
     trainer(cfg, checkpoint_name)
 
 
@@ -126,7 +126,7 @@ def generate(checkpoint_name, checkpoint_index, config, source, output, skip_dum
               help="A set of different number of segments to test. " +
               "Numbers are separated by spaces. Default is '1 3 5 9 11 19'," +
               " which corresponds to '1s, 2s, 3s, 5s, 6s, 10s'.")
-@click.option('--test_ids', '-t', default='all', type=click.STRING,
+@click.option('--test_ids', '-t', default='icassp', type=click.STRING,
               help="One of {'all', 'icassp', 'path/file.npy', (int)}. If 'all', " +
               "test all IDs from the test. If 'icassp', use the 2,000 " +
               "sequence starting point IDs of 'eval/test_ids_icassp.npy' " +

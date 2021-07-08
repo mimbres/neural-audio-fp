@@ -54,9 +54,9 @@ MODEL:
 
 # Batch-size
 BSZ:
-    TR_BATCH_SZ : 120 #
+    TR_BATCH_SZ : 640 #
         # Training batch size N must be EVEN number.
-    TR_N_ANCHOR : 60 # Usually N/2.
+    TR_N_ANCHOR : 320 # Usually N/2.
     VAL_BATCH_SZ : 120 # Must be EVEN number.
     VAL_N_ANCHOR : 60 # Usually N_val/2
     TS_BATCH_SZ : 125
@@ -66,7 +66,7 @@ BSZ:
 # Training parameters
 TRAIN:
     MAX_EPOCH : 100
-    OPTIMIZER : 'Adam' # 'LAMB' or 'Adam'. LAMB for BSZ >= 240
+    OPTIMIZER : 'LAMB' # 'LAMB' or 'Adam'. LAMB for BSZ >= 240
     LR : 1e-4 # Initial learning rate. Usually in the range from 3e-5 to 1e-4 (BSZ < 1280)
     LR_SCHEDULE : 'cos' # ['cos', 'cos-restart', 'None'].
     CHECKPOINT_KEEP_N_HOUR: 1
@@ -106,6 +106,6 @@ SPEC_AUG:
 
 # Device setup
 DEVICE:
-    CPU_N_WORKERS : 4 # 4 for minimal system. 8 is recommended.
-    CPU_MAX_QUEUE : 10 # 10 for minimal system. 20 is recommended.
+    CPU_N_WORKERS : 8 # 4 for minimal system. 8 is recommended.
+    CPU_MAX_QUEUE : 20 # 10 for minimal system. 20 is recommended.
 

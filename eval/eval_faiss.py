@@ -176,7 +176,7 @@ def eval_faiss(emb_dir,
     # Get test_ids
     print(f'test_id: \033[93m{test_ids}\033[0m,  ', end='')
     if test_ids.lower() == 'all':
-        test_ids = np.arange(0, len(query) - max(test_seq_len), 10) # will test all segments in query/db set
+        test_ids = np.arange(0, len(query) - max(test_seq_len), 1) # will test all segments in query/db set
     elif test_ids.lower() == 'icassp':
         test_ids = np.load(
             glob.glob('./**/test_ids_icassp2021.npy', recursive=True)[0])
