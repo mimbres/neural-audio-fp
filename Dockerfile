@@ -20,14 +20,6 @@ RUN wget --quiet \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-# Anaconda3
-# RUN wget --quiet https://repo.continuum.io/archive/Anaconda3-5.3.1-Linux-x86_64.sh -O ~/anaconda.sh && \
-#     /bin/bash ~/anaconda.sh -b -p /opt/conda && \
-#     rm ~/anaconda.sh && \
-#     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-#     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-#     echo "conda activate base" >> ~/.bashrc
-
 RUN apt-get install -y libopenblas-dev
 
 RUN apt-get install -y curl grep sed dpkg git tmux nano htop&& \
@@ -43,7 +35,7 @@ RUN pip3 install --upgrade pip
 COPY environment.yml /tmp/
 RUN conda env create -f /tmp/environment.yml
        
-RUN mkdir /work && mkdir /work/fingerprint_dataset_ICASSP
+RUN mkdir /work && mkdir /work/neural-audio-fp-dataset
 WORKDIR /work
 RUN git clone https://github.com/mimbres/neural-audio-fp.git ./neural-audio-fp
 
