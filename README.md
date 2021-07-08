@@ -115,7 +115,7 @@ docker pull mimbres/neural-audio-fp:latest
 
 
 <details>
-  <summary> If your installation so far fails and you don't want to build from source...:thinking </summary>
+  <summary> If your installation so far fails and you don't want to build from source...:thinking: </summary>
 
   - Try installing `tensorflow` and `faiss-gpu=1.6.5` (not 1.7.1) in separate environments.
   
