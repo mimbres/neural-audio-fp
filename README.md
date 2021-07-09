@@ -178,7 +178,7 @@ kaggle datasets download -d mimbres/neural-audio-fingerprint
   #### Structure of dataset
 
   ```
-  fingerprint_dataset_icassp2021/
+  neural-audio-fp-dataset/
   ├── aug
   │   ├── bg         <=== Audioset, Pub/cafe etc. for background noise mix
   │   ├── ir         <=== IR data for microphone and room reverb simulatio
