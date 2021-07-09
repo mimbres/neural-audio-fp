@@ -140,12 +140,21 @@ docker pull mimbres/neural-audio-fp:latest
 
 |Dataset-mini v1.1 (11.2 GB)  | Dataset-full v1.1 (414 GB) |
 |:---:|:---:|
-| :eight_spoked_asterisk: [G-Drive](https://drive.google.com/file/d/1-eg7GhkOobhrTxFPMus7hVWNlR3AnPgE/view?usp=sharing) | Dataport (OpenAccess) TBA |
+| :eight_spoked_asterisk:[Kaggle](https://www.kaggle.com/mimbres/neural-audio-fingerprint) / [G-Drive](https://drive.google.com/file/d/1-eg7GhkOobhrTxFPMus7hVWNlR3AnPgE/view?usp=sharing) | Dataport (OpenAccess) TBA |
 
 
 * The only difference between these two datasets is the size of 'test-dummy-db'.
   So you can first train and test with `Dataset-mini`. `Dataset-full` is for
-  testing in 100x larger scale. 
+  testing in 100x larger scale.
+* You can quickly download the mini-dataset via `kaggle` [CLI](https://www.kaggle.com/docs/api#getting-started-installation-&-authentication) (recommended).
+  - Sign in kaggle.com -> Account -> API -> Create New Token -> download `kaggle.json`
+```bash
+pip install --user kaggle # One can omit "--user" 
+cp kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+kaggle datasets download -d mimbres/neural-audio-fingerprint
+
+100%|███████████████████████████████████| 9.84G/9.84G [02:28<00:00, 88.6MB/s]
+```
 
 <details>
 
