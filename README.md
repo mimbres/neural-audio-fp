@@ -147,9 +147,10 @@ docker pull mimbres/neural-audio-fp:latest
   So you can first train and test with `Dataset-mini`. `Dataset-full` is for
   testing in 100x larger scale.
 * You can quickly download the mini-dataset via `kaggle` [CLI](https://www.kaggle.com/docs/api#getting-started-installation-&-authentication) (recommended).
-  - Sign in kaggle.com -> Account -> API -> Create New Token -> download `kaggle.json`
+  - Sign in [kaggle](kaggle.com) -> Account -> API -> Create New Token -> download `kaggle.json`
+
 ```bash
-pip install --user kaggle # One can omit "--user" 
+pip install --user kaggle
 cp kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
 kaggle datasets download -d mimbres/neural-audio-fingerprint
 
