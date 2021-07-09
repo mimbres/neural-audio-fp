@@ -17,7 +17,7 @@ This is the first code and dataset release (on July 2021) for reproducing [neura
 Minimum:
 
 - NVIDIA GPU with CUDA 10+
-- 20 GB of free SSD space for mini dataset experiments
+- 25 GB of free SSD space for mini dataset experiments
 
 <details>
   <summary> More info </summary>
@@ -26,7 +26,8 @@ Minimum:
 
   - CPU with 8+ threads
   - NVIDIA GPU with 11+ GB V-memory
-  - SSD free space 500+ GB for full-scale experiment
+  - SSD free space 500+ GB for full-scale experiment 
+  - `tar` extraction temporarily requires additional free space 440 GB. 
 
   #### Recommended batch-size for GPU
   | Device                                        |           Recommended BSZ |
@@ -137,15 +138,14 @@ docker pull mimbres/neural-audio-fp:latest
 
 ## Dataset
 
-|Dataset-mini (10.7 GB)  | Dataset-full (414 GB) |
+|Dataset-mini v1.1 (11.2 GB)  | Dataset-full v1.1 (414 GB) |
 |:---:|:---:|
-| [Dataport](https://ieee-dataport.org/documents/neural-audio-fingerprint-dataset-mini) | [Dataport]() |
+| :eight_spoked_asterisk: [G-Drive](https://drive.google.com/file/d/1-eg7GhkOobhrTxFPMus7hVWNlR3AnPgE/view?usp=sharing) | Dataport (OpenAccess) TBA |
 
 
-* The only difference between these two datasets is the size of 'test-dummy-db'
-. So you can first train and test with 'Dataset-mini'. Then use 'Dataset-full'
- to test the model at 100x larger scale.
-* :eight_spoked_asterisk:**NOTICE:eight_spoked_asterisk:: If you downloaded early package (before July 8, 2021, 2:23 PM GMT) without `v1` tag, you will need `v1 update` available in [Dataport](https://ieee-dataport.org/documents/neural-audio-fingerprint-dataset-mini).**
+* The only difference between these two datasets is the size of 'test-dummy-db'.
+  So you can first train and test with `Dataset-mini`. `Dataset-full` is for
+  testing in 100x larger scale. 
 
 <details>
 
