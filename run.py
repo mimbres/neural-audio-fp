@@ -81,11 +81,11 @@ def train(checkpoint_name, config, max_epoch):
               type=click.STRING,
               help="Name of the model configuration file located in 'config/'." +
               " Default is 'default'")
-@click.option('--source', '-s', default=None, type=pathlib.Path, required=False,
+@click.option('--source', '-s', default=None, type=click.STRING, required=False,
               help="Custom source root directory. The source must be 16-bit "
               "8 Khz mono WAV. This is only useful when constructing a database"
               " without synthesizing queries.")
-@click.option('--output', '-o', default=None, type=pathlib.Path, required=False,
+@click.option('--output', '-o', default=None, type=click.STRING, required=False,
               help="Root directory where the generated embeddings (uncompressed)" +
               " will be stored. Default is OUTPUT_ROOT_DIR/CHECKPOINT_NAME " +
               "defined in config.")
