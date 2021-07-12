@@ -147,7 +147,7 @@ docker pull mimbres/neural-audio-fp:latest
   So you can first train and test with `Dataset-mini`. `Dataset-full` is for
   testing in 100x larger scale.
 * You can download the `Dataset-mini` via `kaggle` [CLI](https://www.kaggle.com/docs/api#getting-started-installation-&-authentication) (recommended).
-  - Sign in [kaggle](kaggle.com) -> Account -> API -> Create New Token -> download `kaggle.json`
+  - Sign in [kaggle](https://kaggle.com) -> Account -> API -> Create New Token -> download `kaggle.json`
 
 ```
 pip install --user kaggle
