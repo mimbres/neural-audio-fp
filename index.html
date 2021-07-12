@@ -12,27 +12,150 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">Neural Audio Fingerprint</h1>
-      <h2 class="project-tagline"></h2>
+      <h2 class="project-tagline">for High-specific Audio Retrieval based on Contrastive Learning</h2>
       <a href="https://github.com/mimbres/neural-audio-fp" class="btn">View on GitHub</a>
-      <a href="https://github.com/mimbres/neural-audio-fp/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/mimbres/neural-audio-fp/tarball/master" class="btn">Download .tar.gz</a>
+      <a href="https://github.com/mimbres/neural-audio-fp#dataset" class="btn">Download Dataset (mini 11GB)</a>
+      <a href="https://github.com/mimbres/neural-audio-fp#dataset" class="btn">Download Dataset (full 443GB)</a> 
     </section>
 
     <section class="main-content">
-      <h1>
-<a id="neural-audio-fp" class="anchor" href="#neural-audio-fp" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Neural Audio Fingerprint for High-specific Audio Retrieval based on Contrastive Learning</h1>
+      <h2>
+<a id="neural-audio-fp" class="anchor" href="#neural-audio-fp" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a></h2>
+
+<h3><em>Jul. 2021. Fully reproducible code and dataset are now available.</em></h3>
 
 <p align="left">
 <img src="website images/fp_system_animation.gif" width="390">
 &nbsp; &nbsp; &nbsp; &nbsp; <img src="website images/contrastive_loss.png" width="350">
 </p>      
       
-<ul>
-<li>Testing ..</li>
-<li>Support </li>
-<li>Experiment d2 </li>     
-<li>Source: </li>
-</ul>
+<h3>Audio Augmentor Demo & Segment-level Search Results</h3>
+
+
+<table>
+  <tbody>
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/021798_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/021798_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/021798_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/021798.png">
+        <br><img src="sound_demo/image/0dB/021798.png"></p></td>
+    </tr>
+
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/003491_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/003491_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/003491_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/003491.png">
+        <br><img src="sound_demo/image/0dB/003491.png"></p></td>
+    </tr>
+
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/057656_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/057656_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/057656_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/057656.png">
+        <br><img src="sound_demo/image/0dB/057656.png"></p></td>
+    </tr>
+
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/107090_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/107090_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/107090_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/107090.png">
+        <br><img src="sound_demo/image/0dB/107090.png"></p></td>
+    </tr>
+
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/109682_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/109682_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/109682_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/109682.png">
+        <br><img src="sound_demo/image/0dB/109682.png"></p></td>
+    </tr>
+
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/126440_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/126440_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/126440_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/126440.png">
+        <br><img src="sound_demo/image/0dB/126440.png"></p></td>
+    </tr>
+
+    <tr>
+      <td><p><audio id="player" controls><source src='sound_demo/db/145454_org.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_10db/145454_10db.wav'></audio>
+        <br><audio id="player" controls><source src='sound_demo/query_0db/145454_0db.wav'></audio></p>
+      </td>
+      <td>ref. database<p>
+
+        <br>snr 10dB 
+        <br>
+        <br>snr 0dB<br></p>
+      </td>
+      <td><p><img src="sound_demo/image/10dB/145454.png">
+        <br><img src="sound_demo/image/0dB/145454.png"></p></td>
+    </tr>
+
+
+  </tbody>
+</table>
+
+
+
+
+<h3>Cite</h3>
+
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@conference {chang2021neural,
+    author={Chang, Sungkyun and Lee, Donmoon and Park, Jeongsoo and Lim, Hyungui and Lee, Kyogu and Ko, Karam and Han, Yoonchang},
+    title={Neural Audio Fingerprint for High-specific Audio Retrieval based on Contrastive Learning},
+    booktitle={International Conference on Acoustics, Speech and Signal Processing (ICASSP 2021)},
+    year = {2021}
+}
+</code></pre></div></div>
 
 
       
