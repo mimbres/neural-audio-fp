@@ -3,7 +3,7 @@ faiss-gpu==1.6.5
 kapre==0.3.5
 librosa
 click
-pyyaml
+pyyaml==5.4.1
 numpy
 matplotlib
 wavio
