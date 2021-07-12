@@ -11,7 +11,7 @@
 ## Intro
 
 This is the first code and dataset release (on July 2021) for reproducing [neural audio fingerprint](https://arxiv.org/abs/2010.11910).
-
+Now :eight_spoked_asterisk:[sound demo](https://mimbres.github.io/neural-audio-fp/) available. 
 
 ## Requirements
 Minimum:
@@ -138,18 +138,18 @@ docker pull mimbres/neural-audio-fp:latest
 
 ## Dataset
 
-|Dataset-mini v1.1 (11.2 GB)  | Dataset-full v1.1 (414 GB) |
-|:---:|:---:|
-| :eight_spoked_asterisk:[Kaggle](https://www.kaggle.com/mimbres/neural-audio-fingerprint) / [G-Drive](https://drive.google.com/file/d/1-eg7GhkOobhrTxFPMus7hVWNlR3AnPgE/view?usp=sharing) | Dataport (OpenAccess) TBA |
-
+|     |Dataset-mini v1.1 (11.2 GB)  | Dataset-full v1.1 (443 GB) |
+|:---:|:---:|:---:|
+| tar |:eight_spoked_asterisk:[kaggle](https://www.kaggle.com/mimbres/neural-audio-fingerprint) / [gdrive](https://drive.google.com/file/d/1-eg7GhkOobhrTxFPMus7hVWNlR3AnPgE/view?usp=sharing) | [dataport(open-access)](http://ieee-dataport.org/open-access/neural-audio-fingerprint-dataset) |
+| raw |[gdrive](https://drive.google.com/drive/folders/1JaEOX2b3M7J40N4mw2Sed9a4U3N5V-Zx?usp=sharing)|[gdrive](https://drive.google.com/drive/folders/1nOjfJ_WzNASGPa-dnRhnYklKaDegO6S-?usp=sharing)|
 
 * The only difference between these two datasets is the size of 'test-dummy-db'.
   So you can first train and test with `Dataset-mini`. `Dataset-full` is for
   testing in 100x larger scale.
-* You can quickly download the mini-dataset via `kaggle` [CLI](https://www.kaggle.com/docs/api#getting-started-installation-&-authentication) (recommended).
+* You can download the `Dataset-mini` via `kaggle` [CLI](https://www.kaggle.com/docs/api#getting-started-installation-&-authentication) (recommended).
   - Sign in [kaggle](kaggle.com) -> Account -> API -> Create New Token -> download `kaggle.json`
 
-```bash
+```
 pip install --user kaggle
 cp kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
 kaggle datasets download -d mimbres/neural-audio-fingerprint
@@ -213,7 +213,7 @@ python run.py generate CHECKPOINT_NAME
 python run.py evaluate CHECKPOINT_NAME CHECKPOINT_INDEX
 ```
 
-Help menu for `run.py` client and its commands.
+Help for `run.py` client and its commands.
 
 ```python
 python run.py --help
@@ -271,7 +271,7 @@ Click to expand each topic.
   python run.py COMMAND -c CONFIG
   ```
 
-  In `generate` command, it is important to use the same config that was used
+  When using `generate` command, it is important to use the same config that was used
   in training.
 
 </details>
@@ -297,19 +297,23 @@ Click to expand each topic.
                  ├── query.mm
                  └── query_shape.npy
   ```
-  By `default` config, `generate` will generate embeddings (or fingerprints) from
-   'dummy_db', `test_query' and 'test_db'. The generated embeddings will be
-   located in `logs/emb/CHECKPOINT_NAME/CHECKPOINT_INDEX/**.mm` and `**.npy`.
+  By `default` config, `generate` will generate embeddings (or fingerprints)
+   from 'dummy_db', `test_query` and `test_db`. The generated embeddings will 
+   be located in `logs/emb/CHECKPOINT_NAME/CHECKPOINT_INDEX/**.mm` and 
+   `**.npy`.
 
   - `dummy_db` is generated from the 100K full-length dataset.
-  - In the `DATASEL` section of config, you can set option for `test_db` and
-   `test_query` generation. The default is `unseen_icassp`, which uses a
+  - In the `DATASEL` section of config, you can select options for a pair of
+   `db`  and `query` generation. The default is `unseen_icassp`, which uses a
     pre-defined test set.
-
-  It is possilbe to generate embeddings (or fingreprints) from your custom source.
+  - It is possilbe to generate only the `db` and `query` pairs by 
+  `--skip_dummy` option. This is frequently used option to avoid overwriting 
+    the most time-consuming `dummy_db` fingerprints in every experiments.   
+  - It is also possilbe to generate embeddings (or fingreprints) from your
+   custom source.
 
   ```python
-  python run.py generate --source SOURCE_ROOT_DIR --output FP_OUTPUT_DIR # for custom audio source
+  python run.py generate --source SOURCE_ROOT_DIR --output FP_OUTPUT_DIR --skip_dummy # for custom audio source
   python run.py generate --help # more details...
   ```
 
@@ -331,7 +335,8 @@ Click to expand each topic.
 
   ```
 
-  In addition, you can choose one of the `--index_type` (default is `IVFPQ`) from the table below.
+  In addition, you can choose one of the `--index_type` (default is `IVFPQ`) 
+  from the table below.
 
   | Type of index | Description |
   | --- | --- |
@@ -383,18 +388,18 @@ But it's very simple as in this [code](eval/eval_faiss.py#L214).
 </p>
 
 
-## Plan (?)
+## Plan
 
 * Now working on `tf.data`-based new data pipeline for multi-GPU and TPU support.
 * One page Colab demo.
 * This project is currently based on [Faiss](https://github.com/facebookresearch/faiss), which provides the fastest large-scale vector searches.
 * [Milvus](https://github.com/milvus-io/milvus) is also worth watching as it is an active project aimed at industrial scale vector search.
-* Someone can PR :smile
 
 
 ## Augmentation Demo and Scoreboard
 
-Synthesized audio samples from [dataset2wav.py](extras/dataset2wav.py) TBA.
+Synthesized audio samples of [augmentation demo](https://mimbres.github.io/neural-audio-fp/) were generated using [dataset2wav.py](extras/dataset2wav.py).
+
 
 ## Acknowledgement
 
