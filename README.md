@@ -198,6 +198,30 @@ kaggle datasets download -d mimbres/neural-audio-fingerprint
 
 </details>
 
+
+<details>
+  
+  <summary> Checksum for Dataset-full </summary>
+  
+  Install `checksumdir`.
+  
+  ```
+  pip install checksumdir
+  ```
+  
+  Compare checksum.
+  
+  ```
+  checksumdir -a md5 neural-audio-fp-dataset
+  # aa90a8fbd3e6f938cac220d8aefdb134
+  
+  checksumdir -a sha1 neural-audio-fp-dataset
+  # 5bbeec7f5873d8e5619d6b0de87c90e180363863d
+  ```
+  
+</details>
+
+
 ## Quickstart
 
 There are 3 basic `COMMAND` s for each step.
