@@ -8,10 +8,11 @@
 &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://user-images.githubusercontent.com/26891722/124309354-8e64f580-dba5-11eb-9271-df43c70a890a.png" width="350">
 </p>
 
-## Intro
+## About
 
-* This is the first code and dataset release (on July 2021) for reproducing [neural audio fingerprint](https://arxiv.org/abs/2010.11910).
-* :eight_spoked_asterisk: Now [sound demo](https://mimbres.github.io/neural-audio-fp/) available. 
+* This is the fisrt code and dataset release by authors (on July 2021) for reproducing [neural audio fingerprint](https://arxiv.org/abs/2010.11910).
+* :eight_spoked_asterisk: [sound demo](https://mimbres.github.io/neural-audio-fp/) available now. 
+* Previously, @stdio2016 reproduced the experiment in PyTorch. [here](https://github.com/stdio2016/pfann)
 
 ## Requirements
 Minimum:
@@ -61,7 +62,7 @@ docker pull mimbres/neural-audio-fp:latest
   - Docker > 20.0
 
   #### Create
-  You can create image through `Dockerfile` and `environment.yml`.
+  You can create an image through `Dockerfile` and `environment.yml`.
 
   ```sh
   git clone https://github.com/mimbres/neural-audio-fp.git
@@ -72,7 +73,7 @@ docker pull mimbres/neural-audio-fp:latest
   #### Further information
   - Intel CPU users can remove `libopenblas` from Dockerfile.
   - `Faiss` and `Numpy` are optimized for Intel MKL.
-  - Image size is about 12 GB or compressed 6.43 GB.
+  - Image size is about 12 GB or 6.43 GB (compressed).
   - To optimize GPU-based search speed, [install from the source](https://github.com/facebookresearch/faiss/blob/master/INSTALL.md#building-from-source).
 
 </details>
@@ -116,7 +117,7 @@ docker pull mimbres/neural-audio-fp:latest
 
 
 <details>
-  <summary> If your installation so far fails and you don't want to build from source...:thinking: </summary>
+  <summary> If your installation fails at this point and you don't want to build from source...:thinking: </summary>
 
   - Try installing `tensorflow` and `faiss-gpu=1.6.5` (not 1.7.1) in separate environments.
   
@@ -161,7 +162,7 @@ kaggle datasets download -d mimbres/neural-audio-fingerprint
 
   <summary> Dataset installation </summary>
 
-  This dataset includes all music sources, background noise, impulse-reponses
+  This dataset includes all music sources, background noises, impulse-reponses
    (IR) samples that can be used for reproducing the ICASSP results.
 
   #### Directory location
@@ -233,7 +234,7 @@ Click to expand each topic.
 
   - If `CHECKPOINT_INDEX` is not specified, the training will resume from the
    latest checkpoint.
-  - In `default` configuration, every checkpoints are stored in
+  - In `default` configuration, all checkpoints are stored in
   `logs/checkpoint/CHECKPOINT_NAME/ckpt-CHECKPOINT_INDEX.index`.
 
 </details>
@@ -277,7 +278,7 @@ Click to expand each topic.
 </details>
 
 <details>
-  <summary> Fingerprint Generatation </summary>
+  <summary> Fingerprint Generation </summary>
 
   ```python
   python run.py generate CHECKPOINT_NAME # from the latest checkpoint
@@ -307,8 +308,8 @@ Click to expand each topic.
    `db`  and `query` generation. The default is `unseen_icassp`, which uses a
     pre-defined test set.
   - It is possilbe to generate only the `db` and `query` pairs by 
-  `--skip_dummy` option. This is frequently used option to avoid overwriting 
-    the most time-consuming `dummy_db` fingerprints in every experiments.   
+  `--skip_dummy` option. This is a frequently used option to avoid overwriting 
+    the most time-consuming `dummy_db` fingerprints in every experiment.   
   - It is also possilbe to generate embeddings (or fingreprints) from your
    custom source.
 
@@ -336,13 +337,13 @@ Click to expand each topic.
   ```
 
   In addition, you can choose one of the `--index_type` (default is `IVFPQ`) 
-  from the table below.
+  from the table below:
 
   | Type of index | Description |
   | --- | --- |
   | `l2` | *L2* distance|
   | `ivf` | Inverted File Index (IVF) |
-  | `ivfpq` | Product Quantizaion (PQ) with IVF [:book:](https://arxiv.org/pdf/1702.08734) |
+  | `ivfpq` | Product Quantization (PQ) with IVF [:book:](https://arxiv.org/pdf/1702.08734) |
   | `ivfpq-rr` | IVF-PQ with re-ranking |
   | ~~`ivfpq-rr-ondisk`~~ | ~~IVF-PQ with re-ranking on disk search~~ |
   | `hnsw` | Hierarchical Navigable Small World [:book:](https://arxiv.org/abs/1603.09320) |
@@ -379,7 +380,7 @@ Click to expand each topic.
 
 ## Build DB & Search
 
-Here is an overview of the system for building and retrieving database.
+Here is an overview of the system for building and retrieving the database.
 The system and 'matcher' algorithm are not detailed in the paper.
 But it's very simple as in this [code](eval/eval_faiss.py#L214).
 
