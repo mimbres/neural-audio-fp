@@ -272,7 +272,7 @@ Click to expand each topic.
   Notes:
 
   - Check batch-size that fits on your device first.
-  - The `default` config is set `TR_BATCH_SZ`=120 with `OTIMIZER`=`Adam`.
+  - The `default` config is set `TR_BATCH_SZ`=120 with `OPTIMIZER`=`Adam`.
   - For `TR_BATCH_SZ` >= 240, `OPTIMIZER`=`LAMB` is recommended.
   - For `TR_BATCH_SZ` >= 1280, `LR`=`1e-4` can be too small.
   - In NTxent loss function, the best temperature parameter `TAU` is in the
