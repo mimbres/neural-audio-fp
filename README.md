@@ -51,7 +51,10 @@ Minimum:
 
 
 ```sh
+# CUDA 10.1-based image
 docker pull mimbres/neural-audio-fp:latest
+# CUDA 11.2-based image for RTX 30x0 and later
+docker pull mimbres/neural-audio-fp:cuda11.2.0-cudnn8
 ```
 
 <details>
