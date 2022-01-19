@@ -34,7 +34,7 @@ def load_checkpoint(checkpoint_root_dir, checkpoint_name, checkpoint_index,
 
     # Load
     if checkpoint_index == None:
-        tf.print("\x1b[1;32mArugment 'checkpoint_index' was not specified.\x1b[0m")
+        tf.print("\x1b[1;32mArgument 'checkpoint_index' was not specified.\x1b[0m")
         tf.print('\x1b[1;32mSearching for the latest checkpoint...\x1b[0m')
         latest_checkpoint = c_manager.latest_checkpoint
         if latest_checkpoint:
@@ -62,7 +62,7 @@ def get_data_source(cfg, source_root_dir, skip_dummy):
     dataset = Dataset(cfg)
     ds = dict()
     if source_root_dir:
-        ds['custom_db'] = dataset.get_custom_db_ds(source_root_dir)
+        ds['custom_source'] = dataset.get_custom_db_ds(source_root_dir)
     else:
         if skip_dummy:
             tf.print("Excluding \033[33m'dummy_db'\033[0m from source.")
@@ -187,6 +187,8 @@ def generate_fingerprint(cfg,
         sz_check[key] = len(arr)
         arr.flush(); del(arr) # Close memmap
 
-    if sz_check['db'] != sz_check['query']:
+    if 'custom_source' in ds.keys():
+        pass;
+    elif sz_check['db'] != sz_check['query']:
         print("\033[93mWarning: 'db' and 'qeury' size does not match. This can cause a problem in evaluataion stage.\033[0m")
     return

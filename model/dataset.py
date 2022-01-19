@@ -301,7 +301,7 @@ class Dataset:
 
 
     def get_custom_db_ds(self, source_root_dir):
-        """ Construc DB from custom source files. """
+        """ Construc DB (or query) from custom source files. """
         fps = sorted(
             glob.glob(source_root_dir + '/**/*.wav', recursive=True))
         _ts_n_anchor = self.ts_batch_sz # Only anchors...
