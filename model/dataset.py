@@ -210,7 +210,8 @@ class Dataset:
             self.hop,
             self.fs,
             shuffle=False,
-            random_offset_anchor=False) # No augmentations...
+            random_offset_anchor=False,
+            drop_the_last_non_full_batch=False) # No augmentations...
         return ds
 
 
@@ -249,7 +250,8 @@ class Dataset:
                 self.hop,
                 self.fs,
                 shuffle=False,
-                random_offset_anchor=False) # No augmentations...
+                random_offset_anchor=False,
+                drop_the_last_non_full_batch=False) # No augmentations...
             ds_db = genUnbalSequence(
                 self.ts_db_icassp_fps,
                 self.ts_batch_sz,
@@ -258,7 +260,8 @@ class Dataset:
                 self.hop,
                 self.fs,
                 shuffle=False,
-                random_offset_anchor=False) # No augmentations...
+                random_offset_anchor=False,
+                drop_the_last_non_full_batch=False) # No augmentations...
             return ds_query, ds_db
 
         # 'unseen_syn'
@@ -283,7 +286,8 @@ class Dataset:
                                   self.ts_snr],
                 ir_mix_parameter=[self.ts_use_ir_aug, self.ts_ir_fps],
                 speech_mix_parameter=[False],
-                reduce_batch_first_half=True)
+                reduce_batch_first_half=True,
+                drop_the_last_non_full_batch=False)
 
             _db_ts_n_anchor = self.ts_batch_sz
             ds_db = genUnbalSequence(
@@ -294,7 +298,8 @@ class Dataset:
                 self.hop,
                 self.fs,
                 shuffle=False,
-                random_offset_anchor=False)
+                random_offset_anchor=False,
+                drop_the_last_non_full_batch=False)
             return ds_query, ds_db
         else:
             raise NotImplementedError(self.datasel_test_query_db)
@@ -313,5 +318,6 @@ class Dataset:
             self.hop,
             self.fs,
             shuffle=False,
-            random_offset_anchor=False) # No augmentations...
+            random_offset_anchor=False,
+            drop_the_last_non_full_batch=False) # No augmentations, No drop-samples.
         return ds

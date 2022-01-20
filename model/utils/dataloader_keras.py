@@ -27,7 +27,8 @@ class genUnbalSequence(Sequence):
         speech_mix_parameter=[False],
         reduce_items_p=0,
         reduce_batch_first_half=False,
-        experimental_mode=False
+        experimental_mode=False,
+        drop_the_last_non_full_batch = True
         ):
         """
         
@@ -73,6 +74,8 @@ class genUnbalSequence(Sequence):
         experimental_mode : (bool), optional
             In experimental mode, we use a set of pre-defined offsets for
             the multiple positive samples.. The default is False.
+        drop_the_last_non_full_batch : (bool), optional
+            Set as False in test. Default is True.
 
         """
         self.bsz = bsz
@@ -123,9 +126,14 @@ class genUnbalSequence(Sequence):
         [[filename, seg_idx, offset_min, offset_max], [ ... ] , ... [ ... ]]
         
         """
-
-        self.n_samples = int(
-            (len(self.fns_event_seg_list) // n_anchor) * n_anchor)
+        
+        self.drop_the_last_non_full_batch = drop_the_last_non_full_batch
+        
+        if self.drop_the_last_non_full_batch: # training
+            self.n_samples = int(
+                (len(self.fns_event_seg_list) // n_anchor) * n_anchor)
+        else:
+            self.n_samples = len(self.fns_event_seg_list) # fp-generation
 
         if self.shuffle == True:
             self.index_event = np.random.permutation(self.n_samples)

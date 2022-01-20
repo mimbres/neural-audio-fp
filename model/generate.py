@@ -131,9 +131,9 @@ def generate_fingerprint(cfg,
     # Generate
     sz_check = dict() # for warning message
     for key in ds.keys():
-        bsz = int(cfg['BSZ']['TS_BATCH_SZ']
-                  )  # Do not use ds.bsz here. It's sometimes not actual.
-        n_items = len(ds[key]) * bsz
+        bsz = int(cfg['BSZ']['TS_BATCH_SZ'])  # Do not use ds.bsz here.
+        # n_items = len(ds[key]) * bsz
+        n_items = ds[key].n_samples
         dim = cfg['MODEL']['EMB_SZ']
         """
         Why use "memmap"?
@@ -183,7 +183,7 @@ def generate_fingerprint(cfg,
         enq.stop()
         """ End of Parallelism-------------------------------------------- """
 
-        tf.print(f'=== Succesfully stored fingerprint to {output_root_dir} ===')
+        tf.print(f'=== Succesfully stored {arr_shape[0]} fingerprint to {output_root_dir} ===')
         sz_check[key] = len(arr)
         arr.flush(); del(arr) # Close memmap
 
