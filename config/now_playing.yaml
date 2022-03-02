@@ -54,9 +54,9 @@ MODEL:
 
 # Batch-size
 BSZ:
-    TR_BATCH_SZ : 120 #
+    TR_BATCH_SZ : 320 #
         # Training batch size N must be EVEN number.
-    TR_N_ANCHOR : 60 # Usually N/2; N/5 for Triplet-loss. 
+    TR_N_ANCHOR : 64 # Usually N/2; N/5 for Online-Triplet loss. 
     VAL_BATCH_SZ : 120 # Must be EVEN number.
     VAL_N_ANCHOR : 60 # Usually N_val/2 
     TS_BATCH_SZ : 125
@@ -77,9 +77,9 @@ TRAIN:
 
 # Loss parameters
 LOSS:
-    LOSS_MODE : 'NTxent' # 'NTxent'(default) or 'Online-Triplet'(now-playing). 
+    LOSS_MODE : 'Online-Triplet' # 'NTxent'(default) or 'Online-Triplet'(now-playing). 
     TAU : 0.05 # **NTXENT ONLY** temperature parameter 0. < TAU < 1. 
-    MARGIN : 0.5 # **ONLINE-TRIPLET ONLY** 
+    MARGIN : 0.4 # **ONLINE-TRIPLET ONLY** 
 
 # Time-domain augmentation parameters
 TD_AUG:

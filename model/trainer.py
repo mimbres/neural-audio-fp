@@ -10,6 +10,7 @@ from model.fp.melspec.melspectrogram import get_melspec_layer
 from model.fp.specaug_chain.specaug_chain import get_specaug_chain_layer
 from model.fp.nnfp import get_fingerprinter
 from model.fp.NTxent_loss_single_gpu import NTxentLoss
+from model.fp.online_triplet_loss import OnlineTripletLoss
 from model.fp.lamb_optimizer import LAMB
 from model.utils.experiment_helper import ExperimentHelper
 from model.utils.mini_search_subroutines import mini_search_eval
@@ -42,7 +43,7 @@ def train_step(X, m_pre, m_specaug, m_fp, loss_obj, helper):
     with tf.GradientTape() as t:
         emb = m_fp(feat)  # (BSZ, Dim)
         loss, sim_mtx, _ = loss_obj.compute_loss(
-            emb_org=emb[:n_anchors, :], emb_rep=emb[n_anchors:, :])
+            emb[:n_anchors, :], emb[n_anchors:, :]) # {emb_org, emb_rep}
     g = t.gradient(loss, m_fp.trainable_variables)
     helper.optimizer.apply_gradients(zip(g, m_fp.trainable_variables))
     avg_loss = helper.update_tr_loss(loss) # To tensorboard.
@@ -58,7 +59,7 @@ def val_step(X, m_pre, m_fp, loss_obj, helper):
     m_fp.trainable = False
     emb = m_fp(feat)  # (BSZ, Dim)
     loss, sim_mtx, _ = loss_obj.compute_loss(
-        emb_org=emb[:n_anchors, :], emb_rep=emb[n_anchors:, :])
+        emb[:n_anchors, :], emb[n_anchors:, :]) # {emb_org, emb_rep}
     avg_loss = helper.update_val_loss(loss) # To tensorboard.
     return avg_loss, sim_mtx
 
@@ -146,14 +147,28 @@ def trainer(cfg, checkpoint_name):
         cfg=cfg)
 
     # Loss objects
-    loss_obj_train = NTxentLoss(
-        n_org=cfg['BSZ']['TR_N_ANCHOR'],
-        n_rep=cfg['BSZ']['TR_BATCH_SZ'] - cfg['BSZ']['TR_N_ANCHOR'],
-        tau=cfg['LOSS']['TAU'])
-    loss_obj_val = NTxentLoss(
-        n_org=cfg['BSZ']['VAL_N_ANCHOR'],
-        n_rep=cfg['BSZ']['VAL_BATCH_SZ'] - cfg['BSZ']['VAL_N_ANCHOR'],
-        tau=cfg['LOSS']['TAU'])
+    if cfg['LOSS']['LOSS_MODE'].upper() == 'NTXENT': # Default
+        loss_obj_train = NTxentLoss(
+            n_org=cfg['BSZ']['TR_N_ANCHOR'],
+            n_rep=cfg['BSZ']['TR_BATCH_SZ'] - cfg['BSZ']['TR_N_ANCHOR'],
+            tau=cfg['LOSS']['TAU'])
+        loss_obj_val = NTxentLoss(
+            n_org=cfg['BSZ']['VAL_N_ANCHOR'],
+            n_rep=cfg['BSZ']['VAL_BATCH_SZ'] - cfg['BSZ']['VAL_N_ANCHOR'],
+            tau=cfg['LOSS']['TAU'])
+    elif cfg['LOSS']['LOSS_MODE'].upper() == 'ONLINE-TRIPLET': # Now-playing
+        loss_obj_train = OnlineTripletLoss(
+            bsz=cfg['BSZ']['TR_BATCH_SZ'],
+            n_anchor=cfg['BSZ']['TR_N_ANCHOR'],
+            mode = 'semi-hard',
+            margin=cfg['LOSS']['MARGIN'])
+        loss_obj_val = OnlineTripletLoss(
+            bsz=cfg['BSZ']['VAL_BATCH_SZ'],
+            n_anchor=cfg['BSZ']['VAL_N_ANCHOR'],
+            mode = 'all', # use 'all' mode for validation
+            margin=0.)
+    else:
+        raise NotImplementedError(cfg['LOSS']['LOSS_MODE'])
 
     # Training loop
     ep_start = helper.epoch
@@ -179,7 +194,7 @@ def trainer(cfg, checkpoint_name):
         enq.stop()
         """ End of Parallelism................................. """
 
-        if cfg['TRAIN']['SAVE_IMG']:
+        if cfg['TRAIN']['SAVE_IMG'] and (sim_mtx is not None):
             helper.write_image_tensorboard('tr_sim_mtx', sim_mtx.numpy())
 
         # Validate
@@ -198,7 +213,7 @@ def trainer(cfg, checkpoint_name):
         enq.stop()
         """ End of Parallelism................................. """
 
-        if cfg['TRAIN']['SAVE_IMG']:
+        if cfg['TRAIN']['SAVE_IMG'] and (sim_mtx is not None):
             helper.write_image_tensorboard('val_sim_mtx', sim_mtx.numpy())
 
         # On epoch end
