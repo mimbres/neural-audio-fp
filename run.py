@@ -8,7 +8,7 @@ import sys
 import pathlib
 import click
 import yaml
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 def load_config(config_fname):
     config_filepath = './config/' + config_fname + '.yaml'
