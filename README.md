@@ -144,8 +144,8 @@ docker pull mimbres/neural-audio-fp:cuda11.2.0-cudnn8
 
 |     |Dataset-mini v1.1 (11.2 GB)  | Dataset-full v1.1 (443 GB) |
 |:---:|:---:|:---:|
-| tar |:eight_spoked_asterisk:[kaggle](https://www.kaggle.com/mimbres/neural-audio-fingerprint) / [gdrive](https://drive.google.com/file/d/1-eg7GhkOobhrTxFPMus7hVWNlR3AnPgE/view?usp=sharing) | [dataport(open-access)](http://ieee-dataport.org/open-access/neural-audio-fingerprint-dataset) |
-| raw |[gdrive](https://drive.google.com/drive/folders/1JaEOX2b3M7J40N4mw2Sed9a4U3N5V-Zx?usp=sharing)|[gdrive](https://drive.google.com/drive/folders/1nOjfJ_WzNASGPa-dnRhnYklKaDegO6S-?usp=sharing)|
+| tar |:eight_spoked_asterisk:[kaggle](https://www.kaggle.com/mimbres/neural-audio-fingerprint) / [gdrive](https://drive.google.com/file/d/19S40YZ4ipJY5sGB-axFaVmS8YitZP3iU/view?usp=sharing) | [dataport(open-access)](http://ieee-dataport.org/open-access/neural-audio-fingerprint-dataset) |
+| raw |[gdrive](https://drive.google.com/drive/folders/1D-ywBJhtve0qlGu0DD1SqjJKSJbfIU9a?usp=sharing)|[gdrive](https://drive.google.com/drive/folders/12vvO8qkQNoGVCl0cdQp0sGKfy8tlxxL9?usp=sharing)|
 
 * The only difference between these two datasets is the size of 'test-dummy-db'.
   So you can first train and test with `Dataset-mini`. `Dataset-full` is for
